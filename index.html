@@ -29,21 +29,42 @@
             backdrop-filter: blur(4px);
             color: #0c4a6e;
             text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            border-radius: 28px;
+            width: 47%;
+            min-height: 64px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.45;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: break-word;
         }
+        @media (min-width: 640px) { .game-bubble { font-size: 15px; min-height: 80px; padding: 12px 16px; } }
 
         /* Targets Style */
         .horizontal-target {
             background-color: white;
             border: 4px solid;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 24px;
+            width: min(64%, 300px);
+            min-height: 56px;
+            padding: 8px 12px;
+            gap: 8px;
+            font-size: 12.5px;
+            line-height: 1.45;
+            white-space: normal;
+            overflow-wrap: break-word;
         }
+        .horizontal-target span { flex: 1; text-align: center; }
+        @media (min-width: 640px) { .horizontal-target { font-size: 15px; padding: 10px 16px; } }
 
         /* Robust CSS Animations */
         @keyframes fallDown { from { top: -150px; } to { top: 120%; } }
-        @keyframes moveRight { from { left: -150px; } to { left: 120%; } }
-        @keyframes moveLeft { from { left: 100%; } to { left: -150px; } }
+        @keyframes moveRight { from { left: -70%; } to { left: 110%; } }
+        @keyframes moveLeft { from { left: 105%; } to { left: -75%; } }
         
-        .anim-fall { animation: fallDown 40s linear forwards; }
+        .anim-fall { animation: fallDown 40s linear both; }
         .anim-right { animation: moveRight 35s linear forwards; }
         .anim-left { animation: moveLeft 35s linear forwards; }
 
@@ -595,12 +616,14 @@
             
             const container = document.getElementById('bubbles-game-area'); container.innerHTML = '';
             const opts = shuffleArray(qData.options);
-            const xPositions = [2, 27, 52, 77]; 
+            const xPositions = [2, 51, 2, 51];
+            const delays = [0, 4, 9, 13];
 
             opts.forEach((opt, idx) => {
                 const bubble = document.createElement('div');
-                bubble.className = `game-anim-element anim-fall game-bubble absolute flex items-center justify-center p-2 w-20 h-20 sm:w-28 sm:h-28 text-xs sm:text-sm font-bold text-center cursor-pointer btn-bounce z-10`;
+                bubble.className = `game-anim-element anim-fall game-bubble absolute flex items-center justify-center font-bold text-center cursor-pointer btn-bounce z-10`;
                 bubble.style.left = `${xPositions[idx]}%`;
+                bubble.style.animationDelay = `${delays[idx]}s`;
                 bubble.innerText = opt;
                 bubble.onclick = () => processAnimGame(opt, qData.ans, 'bubbles');
                 container.appendChild(bubble);
@@ -609,7 +632,7 @@
             clearTimeout(animTimeout);
             animTimeout = setTimeout(() => {
                 if (gameState.currentScreen === 'bubbles') processAnimTimeout('bubbles', qData.ans);
-            }, 40000);
+            }, 48000);
         }
 
         // --- 3. Shoot Game (CSS Animation) ---
@@ -623,17 +646,17 @@
             const container = document.getElementById('shoot-game-area'); container.innerHTML = '';
             const opts = shuffleArray(qData.options);
             const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b']; 
-            const yPositions = [10, 35, 60, 85]; 
+            const yPositions = [3, 27, 51, 75]; 
             const directions = [1, -1, 1, -1]; 
 
             opts.forEach((opt, idx) => {
                 const target = document.createElement('div');
                 let animClass = directions[idx] === 1 ? 'anim-right' : 'anim-left';
-                target.className = `game-anim-element ${animClass} horizontal-target absolute text-gray-800 p-1 rounded-full text-center font-bold flex flex-col items-center justify-center w-20 h-20 sm:w-24 sm:h-24 text-[10px] sm:text-sm cursor-pointer z-10 btn-bounce`;
+                target.className = `game-anim-element ${animClass} horizontal-target absolute text-gray-800 text-center font-bold flex flex-row items-center justify-center cursor-pointer z-10 btn-bounce`;
                 target.style.borderColor = colors[idx]; 
-                target.style.top = `calc(${yPositions[idx]}% - 20px)`;
+                target.style.top = `${yPositions[idx]}%`;
                 
-                target.innerHTML = `<i class="fa-solid fa-bullseye text-2xl sm:text-3xl mb-1" style="color: ${colors[idx]}"></i><span>${opt}</span>`;
+                target.innerHTML = `<i class="fa-solid fa-bullseye text-xl sm:text-2xl shrink-0" style="color: ${colors[idx]}"></i><span>${opt}</span>`;
                 target.onclick = () => processAnimGame(opt, qData.ans, 'shoot');
                 container.appendChild(target);
             });
